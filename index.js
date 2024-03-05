@@ -5,6 +5,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import ClienteRouter from "./routes/cliente.routes.js"
 import bodyParser from "body-parser";
+import axios from 'axios';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -28,30 +29,35 @@ app.listen(3000, () => console.log("Servidor conectado"));
 
 //rutas
 app.use("/api/cliente/", ClienteRouter);
-const pinLed = 13; // Puerto digital donde está conectado tu LED
-let ledEncendido = false;
-app.get('/led/encender', (req, res) => {
-    if (!ledEncendido) {
-        // Enciende el LED solo si no está encendido
-        ledEncendido = true;
-        // Aquí deberías agregar el código para encender el LED usando Arduino o cualquier dispositivo
-        console.log('LED encendido');
-        res.status(200).send('LED encendido');
-    } else {
-        res.status(400).send('El LED ya está encendido');
-    }
+
+const esp32IP = 'direccion-ip-de-tu-esp32';
+
+app.get('/encender-led', (req, res) => {
+  axios.get(`http://${esp32IP}/led/on`)
+    .then(response => {
+      console.log(response.data);
+      res.send('LED encendido en la ESP32');
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send('Error al encender el LED');
+    });
 });
-app.get('/led/apagar', (req, res) => {
-    if (ledEncendido) {
-        // Apaga el LED solo si está encendido
-        ledEncendido = false;
-        // Aquí deberías agregar el código para apagar el LED usando Arduino o cualquier dispositivo
-        console.log('LED apagado');
-        res.status(200).send('LED apagado');
-    } else {
-        res.status(400).send('El LED ya está apagado');
-    }
+
+app.get('/apagar-led', (req, res) => {
+  axios.get(`http://${esp32IP}/led/off`)
+    .then(response => {
+      console.log(response.data);
+      res.send('LED apagado en la ESP32');
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send('Error al apagar el LED');
+    });
 });
+
+
+
 
 //middleware
 app.use((err, req, res, next) => {
