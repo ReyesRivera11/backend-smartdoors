@@ -6,7 +6,6 @@ import mongoose from 'mongoose';
 import ClienteRouter from "./routes/cliente.routes.js"
 import bodyParser from "body-parser";
 import axios from 'axios';
-
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -21,6 +20,32 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
     useNewUrlParser: true,
 });
 
+
+const esp32IP = '192.168.1.222'; // Reemplaza con la IP de tu ESP32
+
+app.get('/encender', async (req, res) => {
+  try {
+    const response = await axios.get(`http://${esp32IP}/led/on`);
+    const result = response.data;
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al encender el LED');
+  }
+});
+
+app.get('/apagar', async (req, res) => {
+  try {
+    const response = await axios.get(`http://${esp32IP}/led/off`);
+    const result = response.data;
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al apagar el LED');
+  }
+});
+
+
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, "Error en la conexion a mongodb"));
 db.once("open", () => console.log("Conexion exitosa a MongoDB"));
@@ -30,31 +55,8 @@ app.listen(3000, () => console.log("Servidor conectado"));
 //rutas
 app.use("/api/cliente/", ClienteRouter);
 
-const esp32IP = 'direccion-ip-de-tu-esp32';
 
-app.get('/encender-led', (req, res) => {
-  axios.get(`http://${esp32IP}/led/on`)
-    .then(response => {
-      console.log(response.data);
-      res.send('LED encendido en la ESP32');
-    })
-    .catch(error => {
-      console.error(error);
-      res.status(500).send('Error al encender el LED');
-    });
-});
 
-app.get('/apagar-led', (req, res) => {
-  axios.get(`http://${esp32IP}/led/off`)
-    .then(response => {
-      console.log(response.data);
-      res.send('LED apagado en la ESP32');
-    })
-    .catch(error => {
-      console.error(error);
-      res.status(500).send('Error al apagar el LED');
-    });
-});
 
 
 
