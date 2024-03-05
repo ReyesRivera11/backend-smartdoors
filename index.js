@@ -25,6 +25,9 @@ app.listen(3000,()=>console.log("Servidor en http://localhost:3000"));
 
 //rutas
 app.use("/api/cliente/",ClienteRouter);
+app.use("/prueba",(req,res)=>{
+    res.send("Hello")
+})
 //middleware
 app.use((err,req,res,next) => {
     const statusCode = err.statusCode || 500;
