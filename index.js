@@ -20,22 +20,21 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
     useNewUrlParser: true,
 });
 
-app.get('/encender', (req, res) => {
-    // Lógica para encender el LED
-    console.log('Encendiendo el LED');
-    // Puedes ejecutar aquí cualquier código adicional que necesites
+const ledStatus = { status: 0 };
+app.post('/controlarLed', (req, res) => {
+    const nuevoEstado = req.body.status;
   
-    res.send('LED encendido');
+    if (nuevoEstado !== undefined && (nuevoEstado === 0 || nuevoEstado === 1)) {
+      ledStatus.status = nuevoEstado;
+      res.send(String(nuevoEstado));
+    } else {
+      res.status(400).send('Solicitud no válida. Proporcione un estado válido (0 o 1) en el cuerpo de la solicitud.');
+    }
   });
   
-  app.get('/apagar', (req, res) => {
-    // Lógica para apagar el LED
-    console.log('Apagando el LED');
-    // Puedes ejecutar aquí cualquier código adicional que necesites
-  
-    res.send('LED apagado');
+  app.get('/estado', (req, res) => {
+    res.send({ status: ledStatus.status });
   });
-
 
 
 const db = mongoose.connection;
