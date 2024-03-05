@@ -20,30 +20,22 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
     useNewUrlParser: true,
 });
 
+app.get('/encender', (req, res) => {
+    // Lógica para encender el LED
+    console.log('Encendiendo el LED');
+    // Puedes ejecutar aquí cualquier código adicional que necesites
+  
+    res.send('LED encendido');
+  });
+  
+  app.get('/apagar', (req, res) => {
+    // Lógica para apagar el LED
+    console.log('Apagando el LED');
+    // Puedes ejecutar aquí cualquier código adicional que necesites
+  
+    res.send('LED apagado');
+  });
 
-const esp32IP = '192.168.1.222'; // Reemplaza con la IP de tu ESP32
-
-app.get('/encender', async (req, res) => {
-  try {
-    const response = await axios.get(`http://${esp32IP}/led/on`);
-    const result = response.data;
-    res.send(result);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error al encender el LED');
-  }
-});
-
-app.get('/apagar', async (req, res) => {
-  try {
-    const response = await axios.get(`http://${esp32IP}/led/off`);
-    const result = response.data;
-    res.send(result);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error al apagar el LED');
-  }
-});
 
 
 const db = mongoose.connection;
