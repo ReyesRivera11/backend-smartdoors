@@ -22,7 +22,11 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
 
 app.get("/ledController", (req,res) =>{
     const {valor} = req.body;
-    res.send("encendido");
+    if(valor == "1"){
+        res.send("Encendido");
+    }else if(valor == "0"){
+        res.send("Apagado");
+    }
 });
 
 app.get('/encender', (req, res) => {
