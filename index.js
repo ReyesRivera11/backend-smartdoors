@@ -21,14 +21,19 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
 });
 
 const ledStatus = { status: 0 };
-app.get("/ledController", (req, res) => {
-    const { valor } = req.query;  // Cambiar de req.body a req.query
-    if (valor == "1") {
-        res.send("Encendido");
-    } else if (valor == "0") {
-        res.send("Apagado");
-    }
-});
+app.get('/ledController', (req, res) => {
+    const { valor } = req.body;
+  
+    if (valor === "1") {
+      ledStatus.status = 1;
+      res.send("Encendido");
+    } else if (valor === "0") {
+      ledStatus.status = 0;
+      res.send("Apagado");
+    } else {
+      res.status(400).send('Solicitud no válida. Proporcione un valor válido (0 o 1) en el cuerpo de la solicitud.');
+    }
+  });
   
   app.get('/estado', (req, res) => {
     res.send({ status: ledStatus.status });
