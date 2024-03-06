@@ -18,7 +18,6 @@ const clienteSchema= new mongoose.Schema({
         required:true,
     },
     pin:String,
-    mac:String,
     huella:String,
     usuariosPermitidos: [
         {type:mongoose.Schema.Types.ObjectId,ref:"UsuariosPermitidos"}

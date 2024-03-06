@@ -6,6 +6,9 @@ import mongoose from 'mongoose';
 import ClienteRouter from "./routes/cliente.routes.js"
 import bodyParser from "body-parser";
 import axios from 'axios';
+import mqtt from "mqtt"
+const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -39,24 +42,33 @@ app.get('/ledController', (req, res) => {
     res.send({ status: ledStatus.status });
   });
 
-app.get('/encender', (req, res) => {
-    // Lógica para encender el LED
-    console.log('Encendiendo el LED');
-    // Puedes ejecutar aquí cualquier código adicional que necesites
-  
-    res.send('LED encendido');
-  });
-  
-  app.get('/apagar', (req, res) => {
-    // Lógica para apagar el LED
-    console.log('Apagando el LED');
-    // Puedes ejecutar aquí cualquier código adicional que necesites
-  
-    res.send('LED apagado');
-  });
+function enviarMensaje(estado) {
+  const message = estado === "ON" ? "ON" : "OFF";
+  mqttClient.publish('doorcraft', message);
+  console.log(`Mensaje MQTT enviado: ${message}`);
+}
+app.get('/app/data-afnpg/endpoint/EcoNido', (req, res) => {
+  const { estado } = req.query; // Use req.query to get parameters from the URL
 
+  if (!estado || (estado !== "ON" && estado !== "OFF")) {
+    return res.status(400).send('Invalid or missing estado value');
+  }
 
+  enviarMensaje(estado);
 
+  res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
+});
+app.post('/app/data-afnpg/endpoint/EcoNido', async (req, res) => {
+  const { estado } = req.body;
+
+  if (estado !== "ON" && estado !== "OFF") {
+    return res.status(400).send('Invalid estado value');
+  }
+
+  enviarMensaje(estado);
+
+  res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
+});
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, "Error en la conexion a mongodb"));
 db.once("open", () => console.log("Conexion exitosa a MongoDB"));
@@ -65,11 +77,6 @@ app.listen(3000, () => console.log("Servidor conectado"));
 
 //rutas
 app.use("/api/cliente/", ClienteRouter);
-
-
-
-
-
 
 
 //middleware
