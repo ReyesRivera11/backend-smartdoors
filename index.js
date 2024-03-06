@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
     useNewUrlParser: true,
 });
 
-app.get("ledController", (req,res) =>{
+app.get("/ledController", (req,res) =>{
     const {valor} = req.body;
     res.send(`${valor}`);
 });
