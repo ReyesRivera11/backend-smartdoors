@@ -20,6 +20,11 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
     useNewUrlParser: true,
 });
 
+app.get("ledController", (req,res) =>{
+    const {valor} = req.body;
+    res.send(`${valor}`);
+});
+
 app.get('/encender', (req, res) => {
     // Lógica para encender el LED
     console.log('Encendiendo el LED');
