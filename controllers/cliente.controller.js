@@ -55,7 +55,7 @@ export const login = async (req, res, next) => {
 
 export const cerrarSesion = async (req, res, next) => {
     try {
-        res.clearCookie("access_token");
+        res.clearCookie('access_token', { sameSite: 'None', secure: true });
         res.json({ message: "Sesión cerrada" });
     } catch (error) {
         next(error);
