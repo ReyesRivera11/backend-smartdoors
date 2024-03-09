@@ -29,7 +29,7 @@ export const login = async (req, res, next) => {
     try {
         const usuario = await Cliente.findOne({ correo });
 
-        if (!usuario) return next(errorHandler(401, "Usuario no encontrado"));
+        if (!usuario) return next(errorHandler(401, "Usuario no encontrado, por favor crea una cuenta"));
 
         const validarPassword = bcrypt.compareSync(password, usuario.password);
 

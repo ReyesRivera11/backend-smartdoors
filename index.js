@@ -14,7 +14,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 dotenv.config();
 
-app.use(cors());
+app.use(cors({
+  origin:'http://localhost:5173',
+  credentials:true
+}));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -58,7 +61,7 @@ app.get('/app/data-afnpg/endpoint/EcoNido', (req, res) => {
 
   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
 });
-app.post('/app/data-afnpg/endpoint/EcoNido', async (req, res) => {
+app.post('/control-led', async (req, res) => {
   const { estado } = req.body;
 
   if (estado !== "ON" && estado !== "OFF") {
