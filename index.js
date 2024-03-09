@@ -83,7 +83,7 @@ app.listen(3000, () => console.log("Servidor conectado"));
 //rutas
 
 app.use("/api/cliente/", ClienteRouter);
-app.use("/api/empleado/", EmpleadoRouter);
+app.use("/api/empleado", EmpleadoRouter);
 app.use("/api/categoria", CategoriaRouter); 
 
 
