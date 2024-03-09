@@ -36,12 +36,17 @@ export const login = async (req, res, next) => {
         if (!validarPassword) return next(errorHandler(401, "Contraseña incorrecta"));
 
         const token = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, {
-            expiresIn: "4h"
+            expiresIn: "1d"
         })
 
         const { password: pass, ...rest } = usuario._doc;
 
-        res.cookie("access_token", token).status(200).json(rest);
+        res.cookie("access_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+          })
+        res.json(rest);
     } catch (error) {
 
         next(error);
@@ -164,11 +169,11 @@ export const enviarCorreo = (correo, subject, html) => {
 export const verificarToken = async(req,res,next) =>{
     const {access_token} = req.cookies;
 
-    if(!access_token) return next(errorHandler(401,"No autorizado1"));
+    if(!access_token) return next(errorHandler(401,"No autorizado"));
 
     jwt.verify(access_token,process.env.JWT_SECRET,async(err,user)=>{
 
-        if(err) return next(errorHandler(401,"No autorizado2"));
+        if(err) return next(errorHandler(401,"No autorizado"));
 
         const usuario = await Cliente.findById(user.id);
 
