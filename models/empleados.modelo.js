@@ -9,7 +9,7 @@ const empleadosSchema= new mongoose.Schema({
         type:String,
         required:true,
     },
-    numeroTelefono:{
+    telefono:{
         type:String,
         required:true,
     },
@@ -41,4 +41,4 @@ const empleadosSchema= new mongoose.Schema({
     }
 });
 
-export default mongoose.model("empleados",empleadosSchema);
+export default mongoose.model("Empleados",empleadosSchema);
