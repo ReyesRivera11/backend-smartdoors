@@ -110,8 +110,9 @@ export const recuperarPass = async (req, res, next) => {
             <div class="container">
                 <h1>Restaurar Contraseña</h1>
                 <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-                <a href="http://localhost:3000/reset-password/${token}">Restablecer Contraseña</a>
+                <a href="http://localhost:5173/restaurar/${token}">Restablecer Contraseña</a>
             </div>
+            
         </body>
         </html>
     `

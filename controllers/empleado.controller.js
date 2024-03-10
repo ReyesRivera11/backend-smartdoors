@@ -48,10 +48,9 @@ export const login = async (req, res, next) => {
 
         const { password: pass, ...rest } = usuario._doc;
 
-        res.cookie("access_token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+        res.cookie("token", token, {
             sameSite: "None",
+            secure: true 
           })
         res.json(rest);
     } catch (error) {
@@ -62,7 +61,7 @@ export const login = async (req, res, next) => {
 
 export const cerrarSesion = async (req, res, next) => {
     try {
-        res.clearCookie('access_token', { sameSite: 'None', secure: true });
+        res.clearCookie('token', { sameSite: 'None', secure: true });
         res.json({ message: "Sesión cerrada" });
     } catch (error) {
         next(error);
@@ -71,11 +70,11 @@ export const cerrarSesion = async (req, res, next) => {
 
 
 export const verificarToken = async(req,res,next) =>{
-    const {access_token} = req.cookies;
+    const {token} = req.cookies;
 
-    if(!access_token) return next(errorHandler(401,"No autorizado"));
+    if(!token) return next(errorHandler(401,"No autorizado"));
 
-    jwt.verify(access_token,process.env.JWT_SECRET,async(err,user)=>{
+    jwt.verify(token,process.env.JWT_SECRET,async(err,user)=>{
 
         if(err) return next(errorHandler(401,"No autorizado"));
 
