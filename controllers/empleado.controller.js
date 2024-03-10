@@ -68,3 +68,23 @@ export const cerrarSesion = async (req, res, next) => {
         next(error);
     }
 };
+
+
+export const verificarToken = async(req,res,next) =>{
+    const {access_token} = req.cookies;
+
+    if(!access_token) return next(errorHandler(401,"No autorizado"));
+
+    jwt.verify(access_token,process.env.JWT_SECRET,async(err,user)=>{
+
+        if(err) return next(errorHandler(401,"No autorizado"));
+
+        const usuario = await Empleados.findById(user.id);
+
+        if(!usuario) return next(errorHandler(401,"Usuario no encontrado"));
+
+        const { password: pass, ...rest } = usuario._doc;
+        return res.status(200).json(rest);
+    });
+   
+}
