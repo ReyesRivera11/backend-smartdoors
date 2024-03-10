@@ -125,17 +125,23 @@ export const recuperarPass = async (req, res, next) => {
 
 export const restaurarPass = async (req, res, next) => {
     const { token } = req.params;
-    const {password} = req.body;
+    const {password,correo} = req.body;
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_REST_PASS);
         const hashedPassword = bcrypt.hashSync(password,10);
-        const clienteEncontrado = await Cliente.findByIdAndUpdate(decoded.id,{
+        const clienteEncontrado = await Cliente.findById(decoded.id);
+        console.log(clienteEncontrado);
+        
+
+        if(clienteEncontrado.correo === correo){
+            const clienteActualizar = await Cliente.findByIdAndUpdate(decoded.id,{
                 password:hashedPassword
              });
-        if(!clienteEncontrado) return next(errorHandler(404,"El usuario no existe"));
-
-        res.json({mensaje:"La contraseña se restablecio correctamente"});
-
+             if(!clienteActualizar) return next(errorHandler(404,"El usuario no existe"));
+            res.json({mensaje:"La contraseña se restablecio correctamente"});
+        }else{
+            return next(errorHandler(400,"El correo no esta registrado."))
+        }
         
     } catch (error) {
         next(error);
