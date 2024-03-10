@@ -1,3 +1,4 @@
+import { response } from "express";
 import { errorHandler } from "../middleware/handleErrors.js";
 
 import Categorias from "../models/categoria.modelo.js";
@@ -47,6 +48,15 @@ export const eliminar = async (req,res,next) => {
 
         return res.status(200).json({smg:"Producto eliminado"})
         
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const listar = async (req,res,next) => {
+    try {
+        const lista = await Categorias.find();
+        return res.status(200).json(lista);
     } catch (error) {
         next(error);
     }
