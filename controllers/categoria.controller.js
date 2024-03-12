@@ -1,4 +1,4 @@
-import { response } from "express";
+
 import { errorHandler } from "../middleware/handleErrors.js";
 
 import Categorias from "../models/categoria.modelo.js";

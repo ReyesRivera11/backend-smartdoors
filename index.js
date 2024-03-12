@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import ClienteRouter from "./routes/cliente.routes.js";
 import EmpleadoRouter from "./routes/empleado.routes.js";
 import CategoriaRouter from "./routes/categoria.routes.js";
+import ProductosRouter from "./routes/productos.routes.js";
 import bodyParser from "body-parser";
 import axios from 'axios';
 import mqtt from "mqtt"
@@ -74,6 +75,20 @@ app.post('/control-led', async (req, res) => {
 
   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
 });
+
+function enviarMensajeId(huella) {
+ 
+  mqttClient.publish('doorcraft', huella);
+  console.log(`Mensaje MQTT enviado: ${huella}`);
+}
+app.post('/huella', async (req, res) => {
+  const { huella } = req.body;
+
+ 
+  enviarMensajeId(huella);
+
+  res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
+});
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, "Error en la conexion a mongodb"));
 db.once("open", () => console.log("Conexion exitosa a MongoDB"));
@@ -85,6 +100,7 @@ app.listen(3000, () => console.log("Servidor conectado"));
 app.use("/api/cliente/", ClienteRouter);
 app.use("/api/empleado", EmpleadoRouter);
 app.use("/api/categoria", CategoriaRouter); 
+app.use("/api/productos", ProductosRouter); 
 
 
 //middleware

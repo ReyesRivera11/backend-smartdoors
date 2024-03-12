@@ -8,6 +8,7 @@ const productoSchema= new mongoose.Schema({
     categoria:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Categorias',
+        required:true,
     },
     imagen:{
         type:String,
@@ -32,4 +33,4 @@ const productoSchema= new mongoose.Schema({
     mac:String
 });
 
-export default mongoose.model("productos",productoSchema);
+export default mongoose.model("Productos",productoSchema);
