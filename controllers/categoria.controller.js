@@ -61,3 +61,14 @@ export const listar = async (req,res,next) => {
         next(error);
     }
 };
+
+export const burcarPorId = async (req,res,next) => {
+    const {id} = req.params;
+    try {
+        const lista = await Categorias.findById(id);
+        if(!lista) return next(errorHandler(404,"Categoria no encontrada"));
+        return res.status(200).json(lista);
+    } catch (error) {
+        next(error);
+    }
+};
