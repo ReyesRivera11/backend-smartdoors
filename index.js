@@ -83,11 +83,8 @@ function enviarMensajeId(huella) {
 }
 app.post('/huella', async (req, res) => {
   const { huella } = req.body;
-
- 
   enviarMensajeId(huella);
-
-  res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
+  res.status(200).send(`Huella enviada ${huella}`);
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, "Error en la conexion a mongodb"));
