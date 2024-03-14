@@ -4,10 +4,9 @@ import express from "express";
 import mongoose from "mongoose";
 
 export const agregar = async (req,res,next) => {
-    // res.send("hola");
+    
     const {nombre,categoria,imagen,descripcion,precio,costo,existencias} = req.body;
     try {
-    
         const productoNuevo = new Productos({
             nombre,
             categoria,
