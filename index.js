@@ -10,6 +10,7 @@ import ProductosRouter from "./routes/productos.routes.js";
 import bodyParser from "body-parser";
 import axios from 'axios';
 import mqtt from "mqtt"
+import Cliente from "./models/cliente.modelo.js"
 const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
 
 const app = express();
@@ -75,6 +76,29 @@ app.post('/control-led', async (req, res) => {
 
   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
 });
+app.post('/pin/:val', async (req, res) => {
+  const {val} = req.params;
+  const resultado = "";
+  try {
+    const res = await Cliente.findOne({pin:val});
+    if(!res){
+      resultado = "incorrecto";
+      mqttClient.publish('doorcraft', resultado);
+      return res.status(401).json({msg:"Pin incorrecto"});
+    }
+      resultado = "correcto";
+      mqttClient.publish('doorcraft', resultado);
+      return res.status(401).json({msg:"Pin correcto"});
+  } catch (error) {
+    console.log(error)
+  }
+});
+
+function enviarMensajePin(pin) {
+ 
+  mqttClient.publish('doorcraft', huella);
+  console.log(`Mensaje MQTT enviado: ${huella}`);
+}
 
 function enviarMensajeId(huella) {
  
