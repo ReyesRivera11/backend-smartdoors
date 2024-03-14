@@ -78,17 +78,18 @@ app.post('/control-led', async (req, res) => {
 });
 app.post('/pin/:val', async (req, res) => {
   const {val} = req.params;
-  const resultado = "";
   try {
-    const resultado = await Cliente.findOne({pin:val});
-    if(!resultado){
-      resultado = "incorrecto";
-      // mqttClient.publish('doorcraft', resultado);
-      return res.status(401).json({msg:"Pin incorrecto"});
+    const result = await Cliente.findOne({pin:val});
+    if(!result){
+      const valor = "incorrecto";
+      mqttClient.publish('doorcraft', valor);
+      return res.status(401).json({msg:valor});
+    }else{
+      const valor = "correcto";
+      mqttClient.publish('doorcraft', valor);
+      return res.status(200).json({msg:valor});
     }
-      resultado = "correcto";
-      // mqttClient.publish('doorcraft', resultado);
-      return res.status(200).json({msg:"Pin correcto"});
+      
   } catch (error) {
     console.log(error)
   }
