@@ -191,3 +191,27 @@ export const verificarToken = async(req,res,next) =>{
     });
    
 }
+
+export const usuarios = async (req,res,next) => {
+    try {
+        const usuarios = await Cliente.find();
+        if(!usuarios){
+            res.status(200).json("No se cuenta con ningun usuario.")
+        }
+        res.status(200).json(usuarios)
+    } catch (error) {
+        next(error);
+    }
+}
+export const getUsuario = async(req,res,next) => {
+    try {
+        const {id} = req.params;
+        const usuario = await Cliente.findById(id);
+        if(!usuario) {
+            return next(errorHandler(401,"El usuario no existe."))
+        }
+        return res.status(200).json(usuario);
+    } catch (error) {
+        next(error);
+    }
+}
