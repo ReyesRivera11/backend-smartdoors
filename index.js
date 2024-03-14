@@ -83,11 +83,11 @@ app.post('/pin/:val', async (req, res) => {
     const resultado = await Cliente.findOne({pin:val});
     if(!resultado){
       resultado = "incorrecto";
-      mqttClient.publish('doorcraft', resultado);
+      // mqttClient.publish('doorcraft', resultado);
       return res.status(401).json({msg:"Pin incorrecto"});
     }
       resultado = "correcto";
-      mqttClient.publish('doorcraft', resultado);
+      // mqttClient.publish('doorcraft', resultado);
       return res.status(200).json({msg:"Pin correcto"});
   } catch (error) {
     console.log(error)
