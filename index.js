@@ -30,52 +30,50 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
     useNewUrlParser: true,
 });
 
-const ledStatus = { status: 0 };
-app.get('/ledController', (req, res) => {
-    const { valor } = req.body;
+// const ledStatus = { status: 0 };
+// app.get('/ledController', (req, res) => {
+//     const { valor } = req.body;
   
-    if (valor === "1") {
-      ledStatus.status = 1;
-      res.send("Encendido");
-    } else if (valor === "0") {
-      ledStatus.status = 0;
-      res.send("Apagado");
-    } else {
-      res.status(400).send('Solicitud no válida. Proporcione un valor válido (0 o 1) en el cuerpo de la solicitud.');
-    }
-  });
+//     if (valor === "1") {
+//       ledStatus.status = 1;
+//       res.send("Encendido");
+//     } else if (valor === "0") {
+//       ledStatus.status = 0;
+//       res.send("Apagado");
+//     } else {
+//       res.status(400).send('Solicitud no válida. Proporcione un valor válido (0 o 1) en el cuerpo de la solicitud.');
+//     }
+//   });
   
-  app.get('/estado', (req, res) => {
-    res.send({ status: ledStatus.status });
-  });
+//   app.get('/estado', (req, res) => {
+//     res.send({ status: ledStatus.status });
+//   });
 
 function enviarMensaje(estado) {
   const message = estado === "ON" ? "ON" : "OFF";
   mqttClient.publish('doorcraft', message);
   console.log(`Mensaje MQTT enviado: ${message}`);
 }
-app.get('/app/data-afnpg/endpoint/EcoNido', (req, res) => {
-  const { estado } = req.query; // Use req.query to get parameters from the URL
+// app.get('/app/data-afnpg/endpoint/EcoNido', (req, res) => {
+//   const { estado } = req.query; // Use req.query to get parameters from the URL
 
-  if (!estado || (estado !== "ON" && estado !== "OFF")) {
-    return res.status(400).send('Invalid or missing estado value');
-  }
+//   if (!estado || (estado !== "ON" && estado !== "OFF")) {
+//     return res.status(400).send('Invalid or missing estado value');
+//   }
 
-  enviarMensaje(estado);
+//   enviarMensaje(estado);
 
-  res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
-});
+//   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
+// });
 app.post('/control-led', async (req, res) => {
   const { estado } = req.body;
-
   if (estado !== "ON" && estado !== "OFF") {
     return res.status(400).send('Invalid estado value');
   }
-
   enviarMensaje(estado);
-
   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
 });
+
 app.post('/pin/:val', async (req, res) => {
   const {val} = req.params;
   try {
@@ -95,14 +93,8 @@ app.post('/pin/:val', async (req, res) => {
   }
 });
 
-function enviarMensajePin(pin) {
- 
-  mqttClient.publish('doorcraft', huella);
-  console.log(`Mensaje MQTT enviado: ${huella}`);
-}
 
 function enviarMensajeId(huella) {
- 
   mqttClient.publish('doorcraft', huella);
   console.log(`Mensaje MQTT enviado: ${huella}`);
 }

@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 
 export const agregar = async (req,res,next) => {
     
-    const {nombre,categoria,imagen,descripcion,precio,costo,existencias} = req.body;
+    const {nombre,categoria,imagen,descripcion,precio,costo,existencias,mac} = req.body;
     try {
         const productoNuevo = new Productos({
             nombre,
@@ -14,7 +14,8 @@ export const agregar = async (req,res,next) => {
             descripcion,
             precio,
             costo,
-            existencias
+            existencias,
+            mac
         });
         await productoNuevo.save();
         res.status(200).json({msg:"Categoria registrada correctamente"});
