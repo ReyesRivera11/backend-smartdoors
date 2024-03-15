@@ -15,10 +15,9 @@ export const agregar = async (req,res,next) => {
             precio,
             costo,
             existencias,
-            mac
         });
         await productoNuevo.save();
-        res.status(200).json({msg:"Categoria registrada correctamente"});
+        res.status(200).json({msg:"Producto registrado correctamente"});
 
     } catch (error) {
         console.log(error)
