@@ -1,9 +1,11 @@
 import express  from "express";
-import { registrar,login,cerrarSesion,recuperarPass,restaurarPass,verificarToken, usuarios, getUsuario } from "../controllers/cliente.controller.js";
+import { registrar,login,cerrarSesion,recuperarPass,restaurarPass,verificarToken, usuarios, getUsuario, editar, asignarMac } from "../controllers/cliente.controller.js";
 
 const router = express.Router();
 
 router.post("/registrar", registrar);
+router.put("/actualizar/:id", editar);
+router.put("/asignar-mac/:id", asignarMac);
 router.post("/login", login);
 router.get("/signout",cerrarSesion );
 router.post("/recuperarPass",recuperarPass );

@@ -20,9 +20,38 @@ const clienteSchema= new mongoose.Schema({
     },
     pin:String,
     huella:String,
-    usuariosPermitidos: [
-        {type:mongoose.Schema.Types.ObjectId,ref:"UsuariosPermitidos"}
-    ],
+    preguntaSecreta:String,
+    respuesta:String,
+    usuariosPermitidos: {
+        type: [{
+          nombre: String,
+          apellidos: String,
+          pin: String,
+          idHuella: String,
+        }],
+        default: function() {
+          if (this.isNew) {
+            return undefined; // No establece ningún valor si es un nuevo documento
+          }
+          return null; // Establece como null si no es un nuevo documento
+        },
+      },
+      puerta: {
+        type: [{
+          modelo:String,
+          mac:String,
+          fechaCompra:{
+            type:Date,
+            default: Date.now
+          }
+        }],
+        default: function() {
+          if (this.isNew) {
+            return undefined; // No establece ningún valor si es un nuevo documento
+          }
+          return null; // Establece como null si no es un nuevo documento
+        },
+      },
 }
 );
 

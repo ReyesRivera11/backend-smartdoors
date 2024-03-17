@@ -6,15 +6,16 @@ import nodemailer from "nodemailer"
 
 export const registrar = async (req, res, next) => {
     const { nombre, apellido, correo, password, } = req.body;
-    console.log(correo)
     try {
 
         const usuario = await Cliente.findOne({ correo });
 
-        if (usuario) return next(errorHandler(400, "El email ya existe, ingrese otro correo o inicie sesión."));
+        if (usuario) return next(errorHandler(400, 
+            "El email ya existe, ingrese otro correo o inicie sesión."));
 
         const hashedPassword = bcrypt.hashSync(password, 10);
-        const nuevoUsuario = new Cliente({ nombre, apellido, correo, password: hashedPassword });
+        const nuevoUsuario = new Cliente(
+            { nombre, apellido, correo, password: hashedPassword });
         await nuevoUsuario.save();
         res.status(201).json("Usuario creado correctamente, inicie sesión");
 
@@ -211,6 +212,65 @@ export const getUsuario = async(req,res,next) => {
             return next(errorHandler(401,"El usuario no existe."))
         }
         return res.status(200).json(usuario);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const editar = async (req, res, next) => {
+    const { nombre, apellido, correo, password, preguntaSecreta,respuesta} = req.body;
+    const {id} = req.params;
+    try {
+        const buscarCliente = await Cliente.findById(id);
+        if(!buscarCliente) return next(errorHandler(401,"Usuario no encontrado1"));
+        if(buscarCliente.correo===correo){
+            const hashedPassword = bcrypt.hashSync(password, 10);
+            const actualizarUsuario = await Cliente.findByIdAndUpdate(id,{
+                nombre,
+                apellido,
+                correo,
+                password: hashedPassword,
+                preguntaSecreta,
+                respuesta
+            });
+            if (!actualizarUsuario) return next(errorHandler(401,"Usuario no encontrado2"));
+            res.status(201).json({message:"Usuario actualizado correctamente."});
+        }else{
+            const buscarUsuarioCorreo = await Cliente.findOne({correo});
+            if(buscarUsuarioCorreo) return next(errorHandler(400,"El correo ya esta en uso."))
+            const hashedPassword = bcrypt.hashSync(password, 10);
+            const actualizarUsuario = await Cliente.findByIdAndUpdate(id,{
+                nombre,
+                apellido,
+                correo,
+                password: hashedPassword,
+                preguntaSecreta,
+                respuesta
+            });
+            if (!actualizarUsuario) return next(errorHandler(401,"Usuario no encontrado3"));
+            res.status(201).json({message:"Usuario actualizado correctamente."});
+
+        }
+       
+    } catch (error) {
+        next(error);
+    }
+
+};
+
+export const asignarMac = async (req,res,next) => {
+    const {mac,modelo} = req.body;
+    const {id} = req.params;
+    try {
+        const buscarCliente = await Cliente.findById(id);
+        if(!buscarCliente) return next(errorHandler(401, "Usuario no encontrado"));
+        if (!buscarCliente.puerta) {
+            buscarCliente.puerta = [];
+          }
+        buscarCliente.puerta.push({ modelo, mac });
+        await buscarCliente.save();
+
+        return res.status(200).json({message:"Mac asignada",buscarCliente})
     } catch (error) {
         next(error);
     }

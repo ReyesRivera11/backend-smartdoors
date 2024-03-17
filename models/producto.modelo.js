@@ -30,7 +30,8 @@ const productoSchema= new mongoose.Schema({
         type:Number,
         required:true,
     },
-    mac:String
+    mac:String,
+    enuso:Boolean
 });
 
 export default mongoose.model("Productos",productoSchema);

@@ -55,3 +55,26 @@ export const obtenerProductos = async (req, res, next) => {
     }
 };
 
+export const obtenerProducto = async (req,res,next) =>{
+    const {id} = req.params;
+    try {
+        const getProducto = await Productos.findById(id);
+        if(!getProducto)return next(errorHandler(401,"El producto no existe"));
+        return res.status(200).json(getProducto);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const editarProducto = async (req,res,next) => {
+    const {id} = req.params;
+    const data = req.body;
+    try {
+         const buscarProducto = await Productos.findByIdAndUpdate(id,data);
+         if(!buscarProducto)return next(errorHandler(401,"El producto no existe."));
+        return res.status(200).json({messagge:"Producto actualizado"});
+    } catch (error) {
+        
+    }
+}
+
