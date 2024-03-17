@@ -78,3 +78,14 @@ export const editarProducto = async (req,res,next) => {
     }
 }
 
+export const obtenerProductosCate = async (req,res,next) => {
+    const {categoria} = req.params;
+    try {
+        const resultado = await Productos.find({categoria})
+        if(!resultado)return next(errorHandler(401,"La categoria no existe"));
+        return res.status(200).json(resultado);
+    } catch (error) {
+        next(error);
+    }
+}
+
