@@ -15,4 +15,4 @@ const deviceSateteSchema = new mongoose.Schema({
     },
 });
 
-export default mongoose.model("DeviceState",productoSchema);
+export default mongoose.model("DeviceState",deviceSateteSchema);

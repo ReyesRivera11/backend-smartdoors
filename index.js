@@ -13,6 +13,8 @@ import bodyParser from "body-parser";
 import mqtt from "mqtt"
 import Cliente from "./models/cliente.modelo.js";
 import Accessos from "./models/accesos.modelo.js";
+import DeviceState from "./models/deviceState.modelo.js";
+import DeviceHistoric from "./models/deviceHistoric.modelo.js";
 import moment from 'moment';
 const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
 
@@ -77,25 +79,54 @@ app.post('/control-led', async (req, res) => {
   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
 });
 
-app.post('/pin/:val/:mac', async (req, res) => {
-  const {val,mac} = req.params;
-  try {
-    const result = await Cliente.findOne({
-      $and: [{ "puerta.mac": mac }, { "pin": val }] 
-    });
-    console.log(result)
-    if(!result){
-      const valor = "incorrecto";
-      mqttClient.publish('doorcraft', valor);
-      return res.status(401).json({msg:valor});
-    }else{
-      const valor = "correcto";
-      mqttClient.publish('doorcraft', valor);
-      return res.status(200).json({msg:valor});
-    }
+// app.post('/pin/:val/:mac', async (req, res) => {
+//   const {val,mac} = req.params;
+//   try {
+//     const result = await Cliente.findOne({
+//       $and: [{ "puerta.mac": mac }, { "pin": val }] 
+//     });
+//     console.log(result)
+//     if(!result){
+//       const valor = "incorrecto";
+//       mqttClient.publish('doorcraft', valor);
+//       return res.status(401).json({msg:valor});
+//     }else{
+//       const valor = "correcto";
+//       mqttClient.publish('doorcraft', valor);
+//       return res.status(200).json({msg:valor});
+//     }
       
+//   } catch (error) {
+//     console.log(error)
+//   }
+// });
+
+app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
+  const {mov,puerta,mac} = req.params;
+  const fechaActual = moment();
+  const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
+  try {
+    const encontrarEstado = await DeviceState.findOneAndUpdate(mac,{
+      presencia:mov,
+      estado:puerta
+    });
+    if(!encontrarEstado){
+      const estado = new DeviceState({mac,estado:puerta,presencia:mov});
+      await estado.save();
+    }
+    const historic = new DeviceHistoric(
+      {mac,variable:"Presencia",valor:mov,fecha:fechaFormateada
+      });
+    await historic.save();
+    const historic2 = new DeviceHistoric(
+      {mac,variable:"PuertaEstado",valor:puerta,fecha:fechaFormateada
+      });
+    await historic2.save();
+
+    return res.status(200).json("Registro exitoso");
+
   } catch (error) {
-    console.log(error)
+    
   }
 });
 

@@ -1,4 +1,6 @@
-const deviceSateteSchema = new mongoose.Schema({
+import mongoose from "mongoose";
+
+const deviceHistoricSchema = new mongoose.Schema({
     mac:{
         type:String,
         required:true,
@@ -11,10 +13,7 @@ const deviceSateteSchema = new mongoose.Schema({
         type:Boolean,
         required:true,
     },
-    fecha:{
-        type:Date,
-        default:Date.now,
-    }
+    fecha:String
 });
 
-export default mongoose.model("DeviceHistoric",productoSchema);
+export default mongoose.model("DeviceHistoric",deviceHistoricSchema);
