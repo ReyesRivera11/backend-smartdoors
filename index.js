@@ -103,10 +103,13 @@ app.post('/control-led', async (req, res) => {
 
 app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
   const {mov,puerta,mac} = req.params;
+  const movimiento = Boolean(mov);
+  const PuertaEstado = Boolean(puerta);
+
   const fechaActual = moment();
   const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
   try {
-    const encontrarEstado = await DeviceState.findOneAndUpdate(mac,{
+    const encontrarEstado = await DeviceState.findOneAndUpdate({mac},{
       presencia:mov,
       estado:puerta
     });
@@ -126,7 +129,7 @@ app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
     return res.status(200).json("Registro exitoso");
 
   } catch (error) {
-    
+    console.log(error);
   }
 });
 

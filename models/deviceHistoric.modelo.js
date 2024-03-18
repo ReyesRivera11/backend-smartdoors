@@ -5,10 +5,7 @@ const deviceHistoricSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    variable:{
-        type:Boolean,
-        required:true,
-    },
+    variable:String,
     valor:{
         type:Boolean,
         required:true,
