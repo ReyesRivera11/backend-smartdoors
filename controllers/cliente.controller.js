@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Cliente from '../models/cliente.modelo.js';
+import Mac from "../models/mac.modelo.js"
+
 import { errorHandler } from "../middleware/handleErrors.js";
 import nodemailer from "nodemailer"
 
@@ -218,7 +220,7 @@ export const getUsuario = async(req,res,next) => {
 }
 
 export const editar = async (req, res, next) => {
-    const { nombre, apellido, correo, password, preguntaSecreta,respuesta} = req.body;
+    const { nombre, apellido, correo, password, preguntaSecreta,respuesta,pin} = req.body;
     const {id} = req.params;
     try {
         const buscarCliente = await Cliente.findById(id);
@@ -231,7 +233,8 @@ export const editar = async (req, res, next) => {
                 correo,
                 password: hashedPassword,
                 preguntaSecreta,
-                respuesta
+                respuesta,
+                pin
             });
             if (!actualizarUsuario) return next(errorHandler(401,"Usuario no encontrado2"));
             res.status(201).json({message:"Usuario actualizado correctamente."});
@@ -245,7 +248,8 @@ export const editar = async (req, res, next) => {
                 correo,
                 password: hashedPassword,
                 preguntaSecreta,
-                respuesta
+                respuesta,
+                pin
             });
             if (!actualizarUsuario) return next(errorHandler(401,"Usuario no encontrado3"));
             res.status(201).json({message:"Usuario actualizado correctamente."});
@@ -263,6 +267,8 @@ export const asignarMac = async (req,res,next) => {
     const {id} = req.params;
     try {
         const buscarCliente = await Cliente.findById(id);
+        const buscarMac = await Mac.findOneAndUpdate({mac},{enuso: true});
+        if(!buscarMac) return next(errorHandler(401, "Mac no encontrada"));
         if(!buscarCliente) return next(errorHandler(401, "Usuario no encontrado"));
         if (!buscarCliente.puerta) {
             buscarCliente.puerta = [];
@@ -275,3 +281,25 @@ export const asignarMac = async (req,res,next) => {
         next(error);
     }
 }
+
+export const agregarUsuarioPermitido = async (req, res, next) => {
+    const { id } = req.params;
+    const { nombre, apellidos, pin, idHuella } = req.body;
+    
+    try {
+        const cliente = await Cliente.findById(id);
+        if (!cliente) {
+            return next(errorHandler(404,"Cliente no encontrado"));
+        }
+        if (!cliente.usuariosPermitidos) {
+            cliente.usuariosPermitidos = [];
+          }
+
+        cliente.usuariosPermitidos.push({ nombre, apellidos, pin, idHuella });
+        await cliente.save();
+
+        return res.status(200).json({ message: 'Usuario permitido agregado correctamente', cliente });
+    } catch (error) {
+        next(error);
+    }
+};

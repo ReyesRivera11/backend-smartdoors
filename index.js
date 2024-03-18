@@ -7,10 +7,13 @@ import ClienteRouter from "./routes/cliente.routes.js";
 import EmpleadoRouter from "./routes/empleado.routes.js";
 import CategoriaRouter from "./routes/categoria.routes.js";
 import ProductosRouter from "./routes/productos.routes.js";
+import AccesosRouter from "./routes/accessos.routes.js";
+import MacRouter from "./routes/mac.routes.js";
 import bodyParser from "body-parser";
-import axios from 'axios';
 import mqtt from "mqtt"
-import Cliente from "./models/cliente.modelo.js"
+import Cliente from "./models/cliente.modelo.js";
+import Accessos from "./models/accesos.modelo.js";
+import moment from 'moment';
 const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
 
 const app = express();
@@ -74,10 +77,13 @@ app.post('/control-led', async (req, res) => {
   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
 });
 
-app.post('/pin/:val', async (req, res) => {
-  const {val} = req.params;
+app.post('/pin/:val/:mac', async (req, res) => {
+  const {val,mac} = req.params;
   try {
-    const result = await Cliente.findOne({pin:val});
+    const result = await Cliente.findOne({
+      $and: [{ "puerta.mac": mac }, { "pin": val }] 
+    });
+    console.log(result)
     if(!result){
       const valor = "incorrecto";
       mqttClient.publish('doorcraft', valor);
@@ -88,6 +94,114 @@ app.post('/pin/:val', async (req, res) => {
       return res.status(200).json({msg:valor});
     }
       
+  } catch (error) {
+    console.log(error)
+  }
+});
+
+app.post('/pin-acceso/:pin/:mac', async (req, res) => {
+  const {pin,mac} = req.params;
+  const fechaActual = moment();
+  const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
+  try {
+    const usuarioPermitido = await Cliente.findOne(
+      { "puerta.mac": mac,"usuariosPermitidos.pin":pin }, 
+      { "usuariosPermitidos.$": 1 } 
+    );
+    const usuarioNormal = await Cliente.findOne({
+      "puerta.mac": mac,
+      pin
+    });
+    
+    if(usuarioNormal){
+      try {
+        // return res.status(200).json(usuarioNormal._id);
+        const valor = "correcto";
+        mqttClient.publish('doorcraft', valor);
+        const nuevoAcceso = new Accessos(
+          {
+            nombre:usuarioNormal.nombre,apellido:usuarioNormal.apellido,fecha:fechaFormateada,
+            idUsuario:usuarioNormal._id
+          }
+        )
+        await nuevoAcceso.save();
+        return res.status(200).json({msg:"Acceso registrada correctamente"});
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    if(usuarioPermitido){
+      try {
+        // const buscarUsuario = await Cliente.findOne({})
+        const valor = "correcto";
+        mqttClient.publish('doorcraft', valor);
+        const nuevoAcceso = new Accessos({
+          nombre:usuarioPermitido.usuariosPermitidos[0].nombre,
+          apellido:usuarioPermitido.usuariosPermitidos[0].apellidos,
+          fecha:fechaFormateada,
+          idUsuario:usuarioPermitido._id
+        })
+        await nuevoAcceso.save();
+        return res.status(200).json({msg:"Acceso registrada correctamente"});
+        // return res.status(200).json(usuarioPermitido.usuariosPermitidos[0]._id);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    const valor = "incorrecto";
+    mqttClient.publish('doorcraft', valor);
+    res.status(404).json("No se encontro ningun usuario");
+  } catch (error) {
+    console.log(error)
+  }
+});
+
+app.post('/huella-acceso/:id/:mac', async (req, res) => {
+  const {id,mac} = req.params;
+  const fechaActual = moment();
+  const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
+  try {
+    const usuarioPermitido = await Cliente.findOne(
+      { "puerta.mac": mac,"usuariosPermitidos.idHuella":id }, 
+      { "usuariosPermitidos.$": 1 } 
+    );
+    const usuarioNormal = await Cliente.findOne({
+      "puerta.mac": mac,
+      huella: id
+    });
+    
+    if(usuarioNormal){
+      try {
+        // return res.status(200).json(usuarioNormal._id);
+        const nuevoAcceso = new Accessos({
+          nombre:usuarioNormal.nombre,apellido:usuarioNormal.apellido,fecha:fechaFormateada,
+          idUsuario:usuarioNormal._id
+        })
+        await nuevoAcceso.save();
+        return res.status(200).json({msg:"Acceso registrada correctamente"});
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    if(usuarioPermitido){
+      try {
+        // const buscarUsuario = await Cliente.findOne({})
+        const nuevoAcceso = new Accessos({
+          nombre:usuarioPermitido.usuariosPermitidos[0].nombre,
+          apellido:usuarioPermitido.usuariosPermitidos[0].apellidos,
+          fecha:fechaFormateada,
+          idUsuario:usuarioPermitido._id
+        })
+        await nuevoAcceso.save();
+        return res.status(200).json({msg:"Acceso registrada correctamente"});
+        // return res.status(200).json(usuarioPermitido.usuariosPermitidos[0]._id);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    res.status(404).json("No se encontro ningun usuario");
   } catch (error) {
     console.log(error)
   }
@@ -115,6 +229,8 @@ app.use("/api/cliente/", ClienteRouter);
 app.use("/api/empleado", EmpleadoRouter);
 app.use("/api/categoria", CategoriaRouter); 
 app.use("/api/productos", ProductosRouter); 
+app.use("/api/mac", MacRouter); 
+app.use("/api/accesos", AccesosRouter); 
 
 
 //middleware

@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 
 export const agregar = async (req,res,next) => {
     
-    const {nombre,categoria,imagen,descripcion,precio,costo,existencias,mac} = req.body;
+    const {nombre,categoria,imagen,descripcion,precio,costo,existencias} = req.body;
     try {
         const productoNuevo = new Productos({
             nombre,

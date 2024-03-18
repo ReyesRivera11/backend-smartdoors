@@ -1,5 +1,5 @@
 import express  from "express";
-import { registrar,login,cerrarSesion,recuperarPass,restaurarPass,verificarToken, usuarios, getUsuario, editar, asignarMac } from "../controllers/cliente.controller.js";
+import { registrar,login,cerrarSesion,recuperarPass,restaurarPass,verificarToken, usuarios, getUsuario, editar, asignarMac, agregarUsuarioPermitido } from "../controllers/cliente.controller.js";
 
 const router = express.Router();
 
@@ -13,6 +13,7 @@ router.post("/restaurar-pass/:token", restaurarPass);
 router.get("/verificarToken",verificarToken);
 router.get("/lista-usuarios",usuarios);
 router.get("/get-usuario/:id",getUsuario);
+router.post("/usuarioPer/:id",agregarUsuarioPermitido);
 
 
 export default router;
