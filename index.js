@@ -103,11 +103,9 @@ app.post('/control-led', async (req, res) => {
 
 app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
   const {mov,puerta,mac} = req.params;
-  const movimiento = Boolean(mov);
-  const PuertaEstado = Boolean(puerta);
+  // const fechaActual = ;
+  // const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
 
-  const fechaActual = moment();
-  const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
   try {
     const encontrarEstado = await DeviceState.findOneAndUpdate({mac},{
       presencia:mov,
@@ -118,11 +116,11 @@ app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
       await estado.save();
     }
     const historic = new DeviceHistoric(
-      {mac,variable:"Presencia",valor:mov,fecha:fechaFormateada
+      {mac,variable:"Presencia",valor:mov,fecha:moment().format("YYYY-MM-DD HH:mm:ss")
       });
     await historic.save();
     const historic2 = new DeviceHistoric(
-      {mac,variable:"PuertaEstado",valor:puerta,fecha:fechaFormateada
+      {mac,variable:"PuertaEstado",valor:puerta,fecha:moment().format("YYYY-MM-DD HH:mm:ss")
       });
     await historic2.save();
 
@@ -136,7 +134,6 @@ app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
 app.post('/pin-acceso/:pin/:mac', async (req, res) => {
   const {pin,mac} = req.params;
   const fechaActual = moment();
-  const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
   try {
     const usuarioPermitido = await Cliente.findOne(
       { "puerta.mac": mac,"usuariosPermitidos.pin":pin }, 
@@ -154,7 +151,8 @@ app.post('/pin-acceso/:pin/:mac', async (req, res) => {
         mqttClient.publish('doorcraft', valor);
         const nuevoAcceso = new Accessos(
           {
-            nombre:usuarioNormal.nombre,apellido:usuarioNormal.apellido,fecha:fechaFormateada,
+            nombre:usuarioNormal.nombre,
+            apellido:usuarioNormal.apellido,fecha:moment().format("YYYY-MM-DD HH:mm:ss"),
             idUsuario:usuarioNormal._id
           }
         )
@@ -173,7 +171,7 @@ app.post('/pin-acceso/:pin/:mac', async (req, res) => {
         const nuevoAcceso = new Accessos({
           nombre:usuarioPermitido.usuariosPermitidos[0].nombre,
           apellido:usuarioPermitido.usuariosPermitidos[0].apellidos,
-          fecha:fechaFormateada,
+          fecha:moment().format("YYYY-MM-DD HH:mm:ss"),
           idUsuario:usuarioPermitido._id
         })
         await nuevoAcceso.save();
@@ -194,7 +192,7 @@ app.post('/pin-acceso/:pin/:mac', async (req, res) => {
 app.post('/huella-acceso/:id/:mac', async (req, res) => {
   const {id,mac} = req.params;
   const fechaActual = moment();
-  const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
+
   try {
     const usuarioPermitido = await Cliente.findOne(
       { "puerta.mac": mac,"usuariosPermitidos.idHuella":id }, 
@@ -209,7 +207,8 @@ app.post('/huella-acceso/:id/:mac', async (req, res) => {
       try {
         // return res.status(200).json(usuarioNormal._id);
         const nuevoAcceso = new Accessos({
-          nombre:usuarioNormal.nombre,apellido:usuarioNormal.apellido,fecha:fechaFormateada,
+          nombre:usuarioNormal.nombre,
+          apellido:usuarioNormal.apellido,fecha:moment().format("YYYY-MM-DD HH:mm:ss"),
           idUsuario:usuarioNormal._id
         })
         await nuevoAcceso.save();
@@ -225,7 +224,7 @@ app.post('/huella-acceso/:id/:mac', async (req, res) => {
         const nuevoAcceso = new Accessos({
           nombre:usuarioPermitido.usuariosPermitidos[0].nombre,
           apellido:usuarioPermitido.usuariosPermitidos[0].apellidos,
-          fecha:fechaFormateada,
+          fecha:moment().format("YYYY-MM-DD HH:mm:ss"),
           idUsuario:usuarioPermitido._id
         })
         await nuevoAcceso.save();
