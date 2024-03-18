@@ -16,6 +16,8 @@ import Accessos from "./models/accesos.modelo.js";
 import DeviceState from "./models/deviceState.modelo.js";
 import DeviceHistoric from "./models/deviceHistoric.modelo.js";
 import moment from 'moment';
+import 'moment-timezone';
+
 const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
 
 const app = express();
@@ -116,11 +118,13 @@ app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
       await estado.save();
     }
     const historic = new DeviceHistoric(
-      {mac,variable:"Presencia",valor:mov,fecha:moment().format("YYYY-MM-DD HH:mm:ss")
+      {mac,variable:"Presencia",valor:mov,
+      fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
       });
     await historic.save();
     const historic2 = new DeviceHistoric(
-      {mac,variable:"PuertaEstado",valor:puerta,fecha:moment().format("YYYY-MM-DD HH:mm:ss")
+      {mac,variable:"PuertaEstado",valor:puerta,
+      fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
       });
     await historic2.save();
 
@@ -152,7 +156,8 @@ app.post('/pin-acceso/:pin/:mac', async (req, res) => {
         const nuevoAcceso = new Accessos(
           {
             nombre:usuarioNormal.nombre,
-            apellido:usuarioNormal.apellido,fecha:moment().format("YYYY-MM-DD HH:mm:ss"),
+            apellido:usuarioNormal.apellido,
+            fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
             idUsuario:usuarioNormal._id
           }
         )
@@ -171,7 +176,7 @@ app.post('/pin-acceso/:pin/:mac', async (req, res) => {
         const nuevoAcceso = new Accessos({
           nombre:usuarioPermitido.usuariosPermitidos[0].nombre,
           apellido:usuarioPermitido.usuariosPermitidos[0].apellidos,
-          fecha:moment().format("YYYY-MM-DD HH:mm:ss"),
+          fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
           idUsuario:usuarioPermitido._id
         })
         await nuevoAcceso.save();
@@ -208,7 +213,8 @@ app.post('/huella-acceso/:id/:mac', async (req, res) => {
         // return res.status(200).json(usuarioNormal._id);
         const nuevoAcceso = new Accessos({
           nombre:usuarioNormal.nombre,
-          apellido:usuarioNormal.apellido,fecha:moment().format("YYYY-MM-DD HH:mm:ss"),
+          apellido:usuarioNormal.apellido,
+          fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
           idUsuario:usuarioNormal._id
         })
         await nuevoAcceso.save();
@@ -224,7 +230,7 @@ app.post('/huella-acceso/:id/:mac', async (req, res) => {
         const nuevoAcceso = new Accessos({
           nombre:usuarioPermitido.usuariosPermitidos[0].nombre,
           apellido:usuarioPermitido.usuariosPermitidos[0].apellidos,
-          fecha:moment().format("YYYY-MM-DD HH:mm:ss"),
+          fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
           idUsuario:usuarioPermitido._id
         })
         await nuevoAcceso.save();
