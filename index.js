@@ -13,10 +13,12 @@ import bodyParser from "body-parser";
 import mqtt from "mqtt"
 import Cliente from "./models/cliente.modelo.js";
 import Accessos from "./models/accesos.modelo.js";
+import Acerca from "./routes/acerca.routes.js";
 import DeviceState from "./models/deviceState.modelo.js";
 import DeviceHistoric from "./models/deviceHistoric.modelo.js";
 import moment from 'moment';
 import 'moment-timezone';
+import routerAcerca from './routes/acerca.routes.js';
 
 const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
 
@@ -270,6 +272,7 @@ app.use("/api/categoria", CategoriaRouter);
 app.use("/api/productos", ProductosRouter); 
 app.use("/api/mac", MacRouter); 
 app.use("/api/accesos", AccesosRouter); 
+app.use("/api/acerca", Acerca); 
 
 
 //middleware

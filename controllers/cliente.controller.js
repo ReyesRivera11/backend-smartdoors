@@ -226,38 +226,20 @@ export const editar = async (req, res, next) => {
         const buscarCliente = await Cliente.findById(id);
         if(!buscarCliente) return next(errorHandler(401,"Usuario no encontrado1"));
         if(buscarCliente.correo===correo){
-            const hashedPassword = bcrypt.hashSync(password, 10);
-            const actualizarUsuario = await Cliente.findByIdAndUpdate(id,{
-                nombre,
-                apellido,
-                correo,
-                password: hashedPassword,
-                preguntaSecreta,
-                respuesta,
-                pin
-            });
+            const actualizarUsuario = await Cliente.findByIdAndUpdate(id,req.body);
             if (!actualizarUsuario) return next(errorHandler(401,"Usuario no encontrado2"));
             res.status(201).json({message:"Usuario actualizado correctamente."});
         }else{
             const buscarUsuarioCorreo = await Cliente.findOne({correo});
             if(buscarUsuarioCorreo) return next(errorHandler(400,"El correo ya esta en uso."))
-            const hashedPassword = bcrypt.hashSync(password, 10);
-            const actualizarUsuario = await Cliente.findByIdAndUpdate(id,{
-                nombre,
-                apellido,
-                correo,
-                password: hashedPassword,
-                preguntaSecreta,
-                respuesta,
-                pin
-            });
+            const actualizarUsuario = await Cliente.findByIdAndUpdate(id,req.body);
             if (!actualizarUsuario) return next(errorHandler(401,"Usuario no encontrado3"));
             res.status(201).json({message:"Usuario actualizado correctamente."});
-
         }
        
     } catch (error) {
         next(error);
+        console.log(error);
     }
 
 };
@@ -303,3 +285,17 @@ export const agregarUsuarioPermitido = async (req, res, next) => {
         next(error);
     }
 };
+
+export const eliminarUusarioPer = async (req,res,next) => {
+    const {idUser,idUserPer} = req.body
+    try {
+        const buscarUusarioPrincila = await Cliente.findByIdAndUpdate(idUser,{
+             $pull: { usuariosPermitidos: { _id: idUserPer } } 
+        })
+
+        if(!buscarUusarioPrincila) return next(errorHandler(404,"Usuario no encontrado"));
+        return res.status(200).json("Usuario eliminado correctamente");
+    } catch (error) {
+        next(error);
+    }
+}

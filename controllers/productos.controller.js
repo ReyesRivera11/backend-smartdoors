@@ -88,4 +88,14 @@ export const obtenerProductosCate = async (req,res,next) => {
         next(error);
     }
 }
+export const eliminar = async (req,res,next) => {
+    const {id} = req.params;
+    try {
+        const buscarProducto = await Productos.findByIdAndDelete(id);
+        if(!buscarProducto) return next(errorHandler(404,"Producto no encontrado"));
+        res.status(200).json({messagge:"Producto eliminado correctamente"});
+    } catch (error) {
+        next(error)
+    }
+};
 

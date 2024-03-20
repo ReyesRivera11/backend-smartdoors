@@ -46,7 +46,7 @@ export const login = async (req, res, next) => {
             expiresIn: "1d"
         })
 
-        const { password: pass, ...rest } = usuario;
+        const { password: pass, ...rest } = usuario._doc;
 
         res.cookie("token", token, {
             sameSite: "None",
