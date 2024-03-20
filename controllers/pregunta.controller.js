@@ -1,5 +1,5 @@
 import { errorHandler } from "../middleware/handleErrors.js";
-import PreguntasRespuestas from "../models/Preguntas.modelo.js";
+import PreguntasRespuestas from "../models/preguntas.modelo.js";
 
 export const agregar = async (req, res, next) => {
     const { pregunta, respuesta } = req.body;
