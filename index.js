@@ -18,6 +18,7 @@ import DeviceState from "./models/deviceState.modelo.js";
 import DeviceHistoric from "./models/deviceHistoric.modelo.js";
 import moment from 'moment';
 import 'moment-timezone';
+import PreguntasRouter from "./routes/pregunta.routes.js";
 import routerAcerca from './routes/acerca.routes.js';
 
 const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
@@ -105,11 +106,17 @@ app.post('/control-led', async (req, res) => {
 //   }
 // });
 
+app.get("/puertaEstado/:mac",async (req,res) =>{
+  const {mac} = req.params;
+  try {
+    const ressultado = await DeviceState.find({mac});
+    res.status(200).json(ressultado);
+  } catch (error) {
+    console.log(error);
+  }
+})
 app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
   const {mov,puerta,mac} = req.params;
-  // const fechaActual = ;
-  // const fechaFormateada = fechaActual.format('YYYY-MM-DD HH:mm:ss');
-
   try {
     const encontrarEstado = await DeviceState.findOneAndUpdate({mac},{
       presencia:mov,
@@ -273,6 +280,7 @@ app.use("/api/productos", ProductosRouter);
 app.use("/api/mac", MacRouter); 
 app.use("/api/accesos", AccesosRouter); 
 app.use("/api/acerca", Acerca); 
+app.use("/api/preguntas", PreguntasRouter); 
 
 
 //middleware
