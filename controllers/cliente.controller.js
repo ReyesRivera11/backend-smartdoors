@@ -287,9 +287,9 @@ export const agregarUsuarioPermitido = async (req, res, next) => {
 };
 
 export const eliminarUusarioPer = async (req,res,next) => {
-    const {idUser,idUserPer} = req.body
+    const {id,idUserPer} = req.params;
     try {
-        const buscarUusarioPrincila = await Cliente.findByIdAndUpdate(idUser,{
+        const buscarUusarioPrincila = await Cliente.findByIdAndUpdate(id,{
              $pull: { usuariosPermitidos: { _id: idUserPer } } 
         })
 

@@ -14,7 +14,7 @@ router.get("/verificarToken",verificarToken);
 router.get("/lista-usuarios",usuarios);
 router.get("/get-usuario/:id",getUsuario);
 router.post("/usuarioPer/:id",agregarUsuarioPermitido);
-router.delete("/eliminarUserPer",eliminarUusarioPer);
+router.delete("/eliminarUserPer/:id/:idUserPer",eliminarUusarioPer);
 
 
 export default router;
