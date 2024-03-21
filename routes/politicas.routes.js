@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/listar",listar);
 router.delete("/eliminar/:id",eliminar);
-router.get("/editar/:id",editar);
+router.put("/editar/:id",editar);
 router.post("/agregar",agregar);
 router.get("/getById/:id",obtenerById);
 
