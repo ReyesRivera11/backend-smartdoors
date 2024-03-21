@@ -1,7 +1,8 @@
 import express  from "express";
-import { listar } from "../controllers/pregunta.controller.js";
+import { agregar, listar } from "../controllers/pregunta.controller.js";
 
 const router = express.Router();
-router.get("/listar",listar)
+router.get("/listar",listar);
+router.post("/agregar",agregar);
 
 export default router;
