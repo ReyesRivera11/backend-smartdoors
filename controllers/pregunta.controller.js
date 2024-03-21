@@ -48,3 +48,14 @@ export const listar = async (req, res, next) => {
         next(error);
     }
 };
+
+export const getPregunta = async (req, res, next) => {
+    const {id} = req.params;
+    try {
+        const lista = await PreguntasRespuestas.findById(id);
+        return res.status(200).json(lista);
+    } catch (error) {
+        next(error);
+    }
+};
+
