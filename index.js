@@ -20,7 +20,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import PreguntasRouter from "./routes/pregunta.routes.js";
 import routerAcerca from './routes/acerca.routes.js';
-
+import PoliticasRouter from "./routes/politicas.routes.js"
 const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
 
 const app = express();
@@ -281,6 +281,7 @@ app.use("/api/mac", MacRouter);
 app.use("/api/accesos", AccesosRouter); 
 app.use("/api/acerca", Acerca); 
 app.use("/api/preguntas", PreguntasRouter); 
+app.use("/api/politicas", PoliticasRouter); 
 
 
 //middleware
