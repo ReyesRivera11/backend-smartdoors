@@ -65,6 +65,69 @@ export const cerrarSesion = async (req, res, next) => {
     }
 };
 
+export const recuperarPassPregunta = async (req, res, next) => {
+
+    const { correo} = req.body;
+
+    try {
+        const buscarUsuario = await Cliente.findOne({ correo });
+        if (!buscarUsuario) return next(errorHandler(404, "El correo no esta registrado"));
+        const token = jwt.sign(
+
+            { id: buscarUsuario._id }, process.env.JWT_SECRET_REST_PASS, {
+            expiresIn: "1h"
+        }
+
+        );
+        const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Restaurar Contraseña</title>
+            <style>
+                body {
+                    font-family: 'Arial', sans-serif;
+                    background-color: #f4f4f4;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background-color: #fff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }
+                h1 {
+                    color: #333;
+                }
+                p {
+                    color: #666;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Restaurar Contraseña</h1>
+                <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+                <a href="http://localhost:5173/restaurar/${token}/${buscarUsuario._id}">
+                    Restablecer Contraseña
+                </a>
+            </div>
+            
+        </body>
+        </html>
+    `
+        enviarCorreo(buscarUsuario.correo,"Restaurar contraseña",html);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.log(error)
+    }
+};
+
 export const recuperarPass = async (req, res, next) => {
 
     const { correo } = req.body;
