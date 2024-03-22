@@ -65,6 +65,28 @@ export const cerrarSesion = async (req, res, next) => {
     }
 };
 
+export const validarPregunta = async (req, res, next) => {
+
+    const {pregunta,respuesta} = req.body;
+    console.log(pregunta)
+    const {id} = req.params;
+
+    try {
+        const buscarUsuario = await Cliente.findById(id);
+        console.log(buscarUsuario.preguntaSecreta)
+        if (!buscarUsuario) return next(errorHandler(404, "El correo no esta registrado"));
+        if(buscarUsuario.preguntaSecreta != pregunta){
+            return next(errorHandler(401,"Credenciales invalidas"))
+        }
+        if(buscarUsuario.respuesta !== respuesta){
+            return next(errorHandler(401,"La respuesta es invalida"))
+        }
+        res.status(200).json({ message: "Respuesta correcta" });
+    } catch (error) {
+        console.log(error)
+    }
+};
+
 export const recuperarPassPregunta = async (req, res, next) => {
 
     const { correo} = req.body;
@@ -79,6 +101,7 @@ export const recuperarPassPregunta = async (req, res, next) => {
         }
 
         );
+        
         const html = `
         <!DOCTYPE html>
         <html lang="en">
@@ -122,6 +145,11 @@ export const recuperarPassPregunta = async (req, res, next) => {
         </html>
     `
         enviarCorreo(buscarUsuario.correo,"Restaurar contraseña",html);
+        res.cookie("token_recuperar", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "None",
+          });
         res.status(200).json({ success: true });
     } catch (error) {
         console.log(error)
@@ -196,9 +224,6 @@ export const restaurarPass = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_REST_PASS);
         const hashedPassword = bcrypt.hashSync(password,10);
         const clienteEncontrado = await Cliente.findById(decoded.id);
-        console.log(clienteEncontrado);
-        
-
         if(clienteEncontrado.correo === correo){
             const clienteActualizar = await Cliente.findByIdAndUpdate(decoded.id,{
                 password:hashedPassword
