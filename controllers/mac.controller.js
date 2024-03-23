@@ -17,7 +17,7 @@ export const agregar = async(req,res,next) => {
 
 export const obtenerMacs = async(req,res,next) => {
     try {
-        const buscarMac = await Mac.find({enuso:false});
+        const buscarMac = await Mac.find({enuso:false}).populate("usuario","nombre apellido");
         if(!buscarMac) return next(errorHandler(404,"No se encontro ninguna mac"));
         res.status(200).json(buscarMac);
     } catch (error) {
