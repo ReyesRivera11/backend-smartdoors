@@ -40,6 +40,7 @@ const clienteSchema= new mongoose.Schema({
         type: [{
           modelo:String,
           mac:String,
+          codigoPuerta:String,
           fechaCompra:{
             type:Date,
             default: Date.now

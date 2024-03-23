@@ -1,13 +1,15 @@
 import {errorHandler} from "../middleware/handleErrors.js";
 import Mac from "../models/mac.modelo.js"
 export const agregar = async(req,res,next) => {
-    const {mac} = req.body;
+    const {mac,puerta,usuarioId,codigo} = req.body;
     try {
         const buscarMac = await Mac.findOne({mac});
+        const buscarCodigo = await Mac.findOne({codigo});
         if(buscarMac) return next(errorHandler(400,"La mac ya esta registrada."));
-        const nuevaMac = new Mac({mac});
+        if(buscarCodigo) return next(errorHandler(400,"El codigo ya esta registrada."));
+        const nuevaMac = new Mac({mac,puerta,usuario:usuarioId,codigo});
         await nuevaMac.save();
-        res.status(200).json({msg:"Categoria registrada correctamente"});
+        res.status(200).json({msg:"Puerta registrada correctamente"});
     } catch (error) {
         next(error)
     }

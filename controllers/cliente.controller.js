@@ -333,17 +333,17 @@ export const editar = async (req, res, next) => {
 };
 
 export const asignarMac = async (req,res,next) => {
-    const {mac,modelo} = req.body;
+    const {mac,modelo,codigo} = req.body;
     const {id} = req.params;
     try {
         const buscarCliente = await Cliente.findById(id);
-        const buscarMac = await Mac.findOneAndUpdate({mac},{enuso: true});
+        const buscarMac = await Mac.findOneAndUpdate({codigo},{enuso: true,usuario:buscarCliente._id});
         if(!buscarMac) return next(errorHandler(401, "Mac no encontrada"));
         if(!buscarCliente) return next(errorHandler(401, "Usuario no encontrado"));
         if (!buscarCliente.puerta) {
             buscarCliente.puerta = [];
           }
-        buscarCliente.puerta.push({ modelo, mac });
+        buscarCliente.puerta.push({ modelo, mac,codigoPuerta:codigo });
         await buscarCliente.save();
 
         return res.status(200).json({message:"Mac asignada",buscarCliente})
