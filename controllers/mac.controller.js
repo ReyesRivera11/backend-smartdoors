@@ -1,13 +1,13 @@
 import {errorHandler} from "../middleware/handleErrors.js";
 import Mac from "../models/mac.modelo.js"
 export const agregar = async(req,res,next) => {
-    const {mac,puerta,usuarioId,codigo} = req.body;
+    const {mac,puerta,codigo} = req.body;
     try {
         const buscarMac = await Mac.findOne({mac});
         const buscarCodigo = await Mac.findOne({codigo});
         if(buscarMac) return next(errorHandler(400,"La mac ya esta registrada."));
         if(buscarCodigo) return next(errorHandler(400,"El codigo ya esta registrada."));
-        const nuevaMac = new Mac({mac,puerta,usuario:usuarioId,codigo});
+        const nuevaMac = new Mac({mac,puerta,codigo});
         await nuevaMac.save();
         res.status(200).json({msg:"Puerta registrada correctamente"});
     } catch (error) {
@@ -17,7 +17,16 @@ export const agregar = async(req,res,next) => {
 
 export const obtenerMacs = async(req,res,next) => {
     try {
-        const buscarMac = await Mac.find({enuso:false}).populate("usuario","nombre apellido");
+        const buscarMac = await Mac.find().populate("usuario","nombre apellido");
+        if(!buscarMac) return next(errorHandler(404,"No se encontro ninguna mac"));
+        res.status(200).json(buscarMac);
+    } catch (error) {
+        next(error)
+    }
+}
+export const obtenerCodigo = async(req,res,next) => {
+    try {
+        const buscarMac = await Mac.find({enuso:false});
         if(!buscarMac) return next(errorHandler(404,"No se encontro ninguna mac"));
         res.status(200).json(buscarMac);
     } catch (error) {
