@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 dotenv.config();
 
 app.use(cors({
-  origin:'http://localhost:5173',
+  origin:'https://doorcraft.developers506.com',
   credentials:true
 }));
 
