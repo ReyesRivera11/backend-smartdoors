@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Cliente from '../models/cliente.modelo.js';
+import Empleados from '../models/empleados.modelo.js';
 import Mac from "../models/mac.modelo.js"
 
 import { errorHandler } from "../middleware/handleErrors.js";
@@ -29,27 +30,45 @@ export const registrar = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
     const { correo, password } = req.body;
+    console.log(password);
     try {
         const usuario = await Cliente.findOne({ correo });
+        const empleado = await Empleados.findOne({ correo });
+        if(usuario){
+            const validarPassword = bcrypt.compareSync(password, usuario.password);
 
-        if (!usuario) return next(errorHandler(401, "Usuario no encontrado, por favor crea una cuenta"));
+            if (!validarPassword) return next(errorHandler(401, "Contraseña incorrecta"));
 
-        const validarPassword = bcrypt.compareSync(password, usuario.password);
+            const token = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, {
+                expiresIn: "1d"
+            })
 
-        if (!validarPassword) return next(errorHandler(401, "Contraseña incorrecta"));
+            const { password: pass, ...rest } = usuario._doc;
 
-        const token = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, {
-            expiresIn: "1d"
-        })
+            res.cookie("access_token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "None",
+            })
+            return res.json(rest);
+        }else if(empleado){
+            const validarPassword = bcrypt.compareSync(password, empleado.password);
 
-        const { password: pass, ...rest } = usuario._doc;
+            if (!validarPassword) return next(errorHandler(401, "Contraseña incorrecta"));
 
-        res.cookie("access_token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "None",
-          })
-        res.json(rest);
+            const token = jwt.sign({ id: empleado._id }, process.env.JWT_SECRET, {
+                expiresIn: "1d"
+            })
+
+            const { password: pass, ...rest } = empleado._doc;
+
+            res.cookie("token", token, {
+                sameSite: "None",
+                secure: true 
+            })
+            return res.json(rest);
+        }
+        return next(errorHandler(401, "Usuario no encontrado"));
     } catch (error) {
 
         next(error);
