@@ -155,7 +155,7 @@ export const recuperarPassPregunta = async (req, res, next) => {
             <div class="container">
                 <h1>Restaurar Contraseña</h1>
                 <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-                <a href="http://localhost:5173/restaurar/${token}/${buscarUsuario._id}">
+                <a href="https://doorcraft.developers506.com/restaurar/${token}/${buscarUsuario._id}">
                     Restablecer Contraseña
                 </a>
             </div>
@@ -223,7 +223,7 @@ export const recuperarPass = async (req, res, next) => {
             <div class="container">
                 <h1>Restaurar Contraseña</h1>
                 <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-                <a href="http://localhost:5173/restaurar/${token}">Restablecer Contraseña</a>
+                <a href="https://doorcraft.developers506.com/restaurar/${token}">Restablecer Contraseña</a>
             </div>
             
         </body>
