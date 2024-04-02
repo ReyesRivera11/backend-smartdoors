@@ -1,5 +1,5 @@
 import express  from "express";
-import { registrar,login,cerrarSesion,recuperarPass,restaurarPass,verificarToken, usuarios, getUsuario, editar, asignarMac, agregarUsuarioPermitido, eliminarUusarioPer, recuperarPassPregunta, validarPregunta } from "../controllers/cliente.controller.js";
+import { registrar,login,cerrarSesion,recuperarPass,restaurarPass,verificarToken, usuarios, getUsuario, editar, asignarMac, agregarUsuarioPermitido, eliminarUusarioPer, recuperarPassPregunta, validarPregunta, registrarPuerta } from "../controllers/cliente.controller.js";
 
 const router = express.Router();
 
@@ -17,6 +17,7 @@ router.get("/lista-usuarios",usuarios);
 router.get("/get-usuario/:id",getUsuario);
 router.post("/usuarioPer/:id",agregarUsuarioPermitido);
 router.delete("/eliminarUserPer/:id/:idUserPer",eliminarUusarioPer);
+router.put("/registrarPuerta/:id",registrarPuerta);
 
 
 export default router;

@@ -19,7 +19,6 @@ import DeviceHistoric from "./models/deviceHistoric.modelo.js";
 import moment from 'moment';
 import 'moment-timezone';
 import PreguntasRouter from "./routes/pregunta.routes.js";
-import routerAcerca from './routes/acerca.routes.js';
 import PoliticasRouter from "./routes/politicas.routes.js";
 import ContactoRouter from "./routes/contacto.routes.js";
 const mqttClient = mqtt.connect('mqtt://broker.hivemq.com');
@@ -30,8 +29,8 @@ app.use(bodyParser.json());
 dotenv.config();
 
 app.use(cors({
-  origin:'https://doorcraft.developers506.com',
-  // origin:'http://localhost:5173',
+  // origin:'https://doorcraft.developers506.com',
+  origin:'http://localhost:5173',
   credentials:true
 }));
 
@@ -42,41 +41,16 @@ mongoose.connect(process.env.MONGO_URL_DATABASE, {
     useNewUrlParser: true,
 });
 
-// const ledStatus = { status: 0 };
-// app.get('/ledController', (req, res) => {
-//     const { valor } = req.body;
+
   
-//     if (valor === "1") {
-//       ledStatus.status = 1;
-//       res.send("Encendido");
-//     } else if (valor === "0") {
-//       ledStatus.status = 0;
-//       res.send("Apagado");
-//     } else {
-//       res.status(400).send('Solicitud no válida. Proporcione un valor válido (0 o 1) en el cuerpo de la solicitud.');
-//     }
-//   });
-  
-//   app.get('/estado', (req, res) => {
-//     res.send({ status: ledStatus.status });
-//   });
 
 function enviarMensaje(estado) {
   const message = estado === "ON" ? "ON" : "OFF";
   mqttClient.publish('doorcraft', message);
   console.log(`Mensaje MQTT enviado: ${message}`);
 }
-// app.get('/app/data-afnpg/endpoint/EcoNido', (req, res) => {
-//   const { estado } = req.query; // Use req.query to get parameters from the URL
 
-//   if (!estado || (estado !== "ON" && estado !== "OFF")) {
-//     return res.status(400).send('Invalid or missing estado value');
-//   }
 
-//   enviarMensaje(estado);
-
-//   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
-// });
 app.post('/control-led', async (req, res) => {
   const { estado } = req.body;
   if (estado !== "ON" && estado !== "OFF") {
@@ -86,27 +60,6 @@ app.post('/control-led', async (req, res) => {
   res.status(200).send(`Datos ${estado === "ON" ? 'Encendido' : 'Apagado'} recibidos y procesados`);
 });
 
-// app.post('/pin/:val/:mac', async (req, res) => {
-//   const {val,mac} = req.params;
-//   try {
-//     const result = await Cliente.findOne({
-//       $and: [{ "puerta.mac": mac }, { "pin": val }] 
-//     });
-//     console.log(result)
-//     if(!result){
-//       const valor = "incorrecto";
-//       mqttClient.publish('doorcraft', valor);
-//       return res.status(401).json({msg:valor});
-//     }else{
-//       const valor = "correcto";
-//       mqttClient.publish('doorcraft', valor);
-//       return res.status(200).json({msg:valor});
-//     }
-      
-//   } catch (error) {
-//     console.log(error)
-//   }
-// });
 
 app.get("/puertaEstado/:mac",async (req,res) =>{
   const {mac} = req.params;
@@ -117,6 +70,19 @@ app.get("/puertaEstado/:mac",async (req,res) =>{
     console.log(error);
   }
 })
+app.post("/cerradura/:mac",async(req,res)=>{
+  const {estado} =  req.body;
+  const {mac} = req.params;
+  try {
+    const encontrarEstado = await DeviceState.findOneAndUpdate({mac},{
+     cerradura:estado
+    });
+    if(!encontrarEstado){res.status(400).json("Error al actualizar")};
+    return res.status(200).json("Estado actualizado"); 
+  } catch (error) {
+    
+  }
+});
 app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
   const {mov,puerta,mac} = req.params;
   try {

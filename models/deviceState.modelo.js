@@ -13,6 +13,9 @@ const deviceSateteSchema = new mongoose.Schema({
         type:Boolean,
         required:true,
     },
+    cerradura:{
+        type:Boolean,
+    }
 });
 
 export default mongoose.model("DeviceState",deviceSateteSchema);

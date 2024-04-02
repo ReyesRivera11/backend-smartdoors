@@ -356,8 +356,8 @@ export const asignarMac = async (req,res,next) => {
     const {id} = req.params;
     try {
         const buscarCliente = await Cliente.findById(id);
-        const buscarMac = await Mac.findOneAndUpdate({codigo},{enuso: true,usuario:buscarCliente._id});
-        if(!buscarMac) return next(errorHandler(401, "Mac no encontrada"));
+        const buscarMac = await Mac.findOneAndUpdate({codigo,enuso:false},{enuso: true,usuario:buscarCliente._id});
+        if(!buscarMac) return next(errorHandler(401, "Codigo no disponible"));
         if(!buscarCliente) return next(errorHandler(401, "Usuario no encontrado"));
         if (!buscarCliente.puerta) {
             buscarCliente.puerta = [];
@@ -366,6 +366,26 @@ export const asignarMac = async (req,res,next) => {
         await buscarCliente.save();
 
         return res.status(200).json({message:"Mac asignada",buscarCliente})
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const registrarPuerta = async (req,res,next) => {
+    const {codigo} = req.body;
+    const {id} = req.params;
+    try {
+        const buscarCliente = await Cliente.findById(id);
+        const buscarMac = await Mac.findOneAndUpdate({codigo,enuso:false},{enuso: true,usuario:buscarCliente._id});
+        if(!buscarMac) return next(errorHandler(401, "Codigo no disponible o en uso"));
+        if(!buscarCliente) return next(errorHandler(401, "Usuario no encontrado"));
+        if (!buscarCliente.puerta) {
+            buscarCliente.puerta = [];
+          }
+        buscarCliente.puerta.push({ modelo:buscarMac.puerta, mac:buscarMac.mac,codigoPuerta:codigo });
+        await buscarCliente.save();
+
+        return res.status(200).json({message:"Puerta asignada",buscarCliente})
     } catch (error) {
         next(error);
     }
