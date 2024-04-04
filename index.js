@@ -29,8 +29,8 @@ app.use(bodyParser.json());
 dotenv.config();
 
 app.use(cors({
-  origin:'https://doorcraft.developers506.com',
-  // origin:'http://localhost:5173',
+  // origin:'https://doorcraft.developers506.com',
+  origin:'https://doorcraftt.developers506.com',
   credentials:true
 }));
 
