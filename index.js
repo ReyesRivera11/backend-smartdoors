@@ -29,6 +29,7 @@ app.use(bodyParser.json());
 dotenv.config();
 
 app.use(cors({
+  //Pruebas 
   origin: ['https://doorcraft.developers506.com', 'https://doorcraftt.developers506.com'],
   credentials:true
 }));
