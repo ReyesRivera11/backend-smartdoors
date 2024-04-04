@@ -28,7 +28,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 dotenv.config();
 
-app.use(cors());
+app.use(cors({
+  origin: ['https://doorcraft.developers506.com', 'https://doorcraftt.developers506.com'],
+  credentials:true
+}));
 
 app.use(express.json());
 app.use(cookieParser());
