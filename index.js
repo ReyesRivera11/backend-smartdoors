@@ -30,8 +30,8 @@ dotenv.config();
 
 app.use(cors({
   //Pruebas
-  // origin: ['https://doorcraft.developers506.com', 'https://doorcraftt.developers506.com'],
-  origin: 'http://localhost:5173',
+  origin: ['https://doorcraft.developers506.com', 'https://doorcraftt.developers506.com'],
+  // origin: 'http://localhost:5173',
   credentials:true
 }));
 
