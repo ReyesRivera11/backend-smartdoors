@@ -30,8 +30,8 @@ dotenv.config();
 
 app.use(cors({
   //Pruebas
-  origin: ['https://doorcraft.developers506.com', 'https://doorcraftt.developers506.com'],
-  // origin: 'https://doorcraftt.developers506.com',
+  // origin: ['https://doorcraft.developers506.com', 'https://doorcraftt.developers506.com'],
+  origin: 'http://localhost:5173',
   credentials:true
 }));
 
@@ -113,8 +113,8 @@ app.post("/estado/:mov/:puerta/:mac",async(req,res) => {
   }
 });
 
-app.post('/pin-acceso/:pin/:mac', async (req, res) => {
-  const {pin,mac} = req.params;
+app.post('/pin-acceso/:pin/:mac/:metodo', async (req, res) => {
+  const {pin,mac,metodo} = req.params;
   const fechaActual = moment();
   try {
     const usuarioPermitido = await Cliente.findOne(
@@ -136,10 +136,12 @@ app.post('/pin-acceso/:pin/:mac', async (req, res) => {
             nombre:usuarioNormal.nombre,
             apellido:usuarioNormal.apellido,
             fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
+            metodo:metodo,
             idUsuario:usuarioNormal._id
           }
         )
         await nuevoAcceso.save();
+
         return res.status(200).json({msg:"Acceso registrada correctamente"});
       } catch (error) {
         console.log(error);
@@ -155,6 +157,7 @@ app.post('/pin-acceso/:pin/:mac', async (req, res) => {
           nombre:usuarioPermitido.usuariosPermitidos[0].nombre,
           apellido:usuarioPermitido.usuariosPermitidos[0].apellidos,
           fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
+          metodo:metodo,
           idUsuario:usuarioPermitido._id
         })
         await nuevoAcceso.save();
@@ -172,8 +175,8 @@ app.post('/pin-acceso/:pin/:mac', async (req, res) => {
   }
 });
 
-app.post('/huella-acceso/:id/:mac', async (req, res) => {
-  const {id,mac} = req.params;
+app.post('/huella-acceso/:id/:mac/:metodo', async (req, res) => {
+  const {id,mac,metodo} = req.params;
   const fechaActual = moment();
 
   try {
@@ -193,6 +196,7 @@ app.post('/huella-acceso/:id/:mac', async (req, res) => {
           nombre:usuarioNormal.nombre,
           apellido:usuarioNormal.apellido,
           fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
+          metodo:metodo,
           idUsuario:usuarioNormal._id
         })
         await nuevoAcceso.save();
@@ -209,6 +213,7 @@ app.post('/huella-acceso/:id/:mac', async (req, res) => {
           nombre:usuarioPermitido.usuariosPermitidos[0].nombre,
           apellido:usuarioPermitido.usuariosPermitidos[0].apellidos,
           fecha:moment().tz('America/Mexico_City').format('YYYY-MM-DD HH:mm:ss'),
+          metodo:metodo,
           idUsuario:usuarioPermitido._id
         })
         await nuevoAcceso.save();

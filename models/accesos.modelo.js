@@ -4,6 +4,7 @@ const ingresoSchema = new mongoose.Schema({
     nombre:String,
     apellido:String,
     fecha:String,
+    metodo:String,
     idUsuario:mongoose.Schema.Types.ObjectId
 });
 
